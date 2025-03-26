@@ -14,12 +14,12 @@ pipeline {
         echo "This is packaging stage"
         sh "mvn clean package"
       }
-      post {
-        success {
-            echo "BUILD IS SUCCESSFULL"
-            archiveArtifacts artifacts: '**/target/*.war'
-        }
-      }
+    //   post {
+    //     success {
+    //         echo "BUILD IS SUCCESSFULL"
+    //         archiveArtifacts artifacts: '**/target/*.war'
+    //     }
+    //   }
     }
   }
 }
