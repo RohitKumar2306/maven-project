@@ -4,8 +4,9 @@ pipeline {
     Name = "Rohit Kumar"
   }
   parameters {
-    string defaultValue: 'Chintamani', description: 'LastName = Chintamani', name: 'LastName'
-  }
+    string defaultValue: 'Rohit Kumar', description: 'First Name', name: 'FirstName'
+    choice choices: ['1', '2', '3', '4', '5'], description: 'Example learning', name: 'Choices'
+  }   
 
   stages {
     stage("Validate Application") {
