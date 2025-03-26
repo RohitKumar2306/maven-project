@@ -12,7 +12,7 @@ pipeline {
     stage("Validate Application") {
       steps {
         echo "This is build stage"
-        echo "My Name is $Name ${params.LastName}"
+        echo "My Name is $Name ${params.LastName} ${params.choices(2)}"
         sh "mvn validate"
       }
     }
