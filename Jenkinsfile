@@ -14,80 +14,68 @@ pipeline {
 
     stage("Build the Application"){
         steps {
-            // sh 'mvn clean package -DskipTests=true'
-            sh 'echo "Hello World!" > artifact.txt'
-            stash includes: 'artifact.txt', name: 'myArtifact'
-        }
-        // post {
-        //     success {
-        //         dir("webapp/target/")
-        //         {
-        //             stash name: "maven-build", includes: "*.war"
-        //         }
-        //         echo "BUILD IS SUCCESSFULL"
-        //     }
-        // }
-    }
-    stage("Deploy") {
-        agent { label 'dev'}
-        steps {
-            dir ('/home/rohit-slave/testingStashing'){
-                unstash 'myArtifact'
+            sh 'mvn clean package -DskipTests=true'
+            dir("webapp/target/"){
                 sh "pwd"
-                sh "cat artifact.txt"
+                stash includes: "*.war", name: 'maven-build'
+            }
+        }
+        post {
+            success {
+                echo "BUILD IS SUCCESSFULL"
             }
         }
     }
 
-    // stage("Testing the Application") {
-    //     parallel {
-    //         stage("Testing in DEV Environment") {
-    //             agent { label 'dev'}
-    //             steps {
-    //                 sh 'mvn test'
-    //             }
-    //         }
-    //         stage("Testing in PROD Environment") {
-    //             agent { label 'Master'}
-    //             steps {
-    //                 sh 'mvn test'
-    //             }
-    //         }
-    //     }
-    // }
+    stage("Testing the Application") {
+        parallel {
+            stage("Testing in DEV Environment") {
+                agent { label 'dev'}
+                steps {
+                    sh 'mvn test'
+                }
+            }
+            stage("Testing in PROD Environment") {
+                agent { label 'Master'}
+                steps {
+                    sh 'mvn test'
+                }
+            }
+        }
+    }
 
-    // stage("Deploy into DEV Server") {
-    //     when { expression {params.env == 'dev'}
-    //     beforeAgent true}
-    //     agent {label 'dev'}
+    stage("Deploy into DEV Server") {
+        when { expression {params.env == 'dev'}
+        beforeAgent true}
+        agent {label 'dev'}
 
-    //     steps {
-    //         dir("/var/www/html") {
-    //             echo "Unstashing is started"
-    //             unstash "maven-build"
-    //             echo "Unstashing is completed"
-    //         }
-    //         sh """
-    //         cd /var/www/html/
-    //         jar -xvf webapp.war
-    //         """
-    //     }
-    // }
+        steps {
+            dir("/var/www/html") {
+                echo "Unstashing is started"
+                unstash 'maven-build'
+                echo "Unstashing is completed"
+            }
+            sh """
+            cd /var/www/html/
+            jar -xvf webapp.war
+            """
+        }
+    }
 
-    // stage("Deploy into PROD Server") {
-    //     when { expression {params.env == 'Master'}
-    //     beforeAgent true}
-    //     agent {label 'Master'}
+    stage("Deploy into PROD Server") {
+        when { expression {params.env == 'Master'}
+        beforeAgent true}
+        agent {label 'Master'}
 
-    //     steps {
-    //         dir("/var/www/html") {
-    //             unstash "maven-build"
-    //         }
-    //         sh """
-    //         cd /var/www/html/
-    //         jar -xvf webapp.war
-    //         """
-    //     }
-    // }
+        steps {
+            dir("/var/www/html") {
+                unstash 'maven-build'
+            }
+            sh """
+            cd /var/www/html/
+            jar -xvf webapp.war
+            """
+        }
+    }
   }
 }
