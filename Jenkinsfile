@@ -1,11 +1,13 @@
 pipeline {
   agent any
+  
   environment {
     Name = "Rohit Kumar"
   }
+
   parameters {
-    choice env: ['dev', 'prod'], name: 'env'
-  }   
+    choice choices: ['dev', 'Master'], name: 'env'
+  }
 
   stages {
     // stage("Validate Application") {
@@ -63,6 +65,22 @@ pipeline {
                 echo "BUILD IS SUCCESSFULL"
                 archiveArtifacts artifacts: '**/target/*.war'
             }
+        }
+    }
+
+    stage("Deploy into DEV Server") {
+        when { expression {params.env == 'dev'}
+        beforeAgent true}
+        agent {label 'dev'}
+
+        steps {
+            dir("/var/www/html") {
+                unstash "maven-build"
+            }
+            sh """
+            cd /var/www/html/
+            jar -xvf webapp.war
+            """
         }
     }
 
