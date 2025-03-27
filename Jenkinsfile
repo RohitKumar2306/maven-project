@@ -29,9 +29,11 @@ pipeline {
         // }
     }
     stage("Deploy") {
-        agent any
+        agent { label 'dev'}
         steps {
+            dir ('/home/rohit-slave/testingStashing')
             unstash 'myArtifact'
+            sh "pwd"
             sh "cat artifact.txt"
         }
     }
