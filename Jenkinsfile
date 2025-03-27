@@ -10,24 +10,27 @@ pipeline {
 
   stages {
     stage("Validate Application") {
-      steps {
-        echo "This is build stage"
-        echo "My Name is $Name ${params.LastName} ${params.FirstName}"
-        sh "mvn validate"
-      }
+        parallel {    
+            stage ("Parallelly Validating the Build") {
+                steps {
+                    echo "This is build stage"
+                    echo "My Name is $Name ${params.LastName} ${params.FirstName}"
+                    sh "mvn validate"
+                }
+            }
+            stage("Parallelly Package the Application") {
+                steps {
+                    echo "This is packaging stage"
+                    sh "mvn clean package"
+                }
+                post {
+                    success {
+                        echo "BUILD IS SUCCESSFULL"
+                        archiveArtifacts artifacts: '**/target/*.war'
+                    }
+                }
+            }
+        }
     }
-
-    // stage("Package the Application") {
-    //   steps {
-    //     echo "This is packaging stage"
-    //     sh "mvn clean package"
-    //   }
-    //   post {
-    //     success {
-    //         echo "BUILD IS SUCCESSFULL"
-    //         archiveArtifacts artifacts: '**/target/*.war'
-    //     }
-    //   }
-    // }
   }
 }
