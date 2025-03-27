@@ -65,7 +65,7 @@ pipeline {
     stage("Deploy into PROD Server") {
         when { expression {params.env == 'Master'}
         beforeAgent true}
-        agent {label 'master'}
+        agent {label 'Master'}
 
         steps {
             dir("/var/www/html") {
