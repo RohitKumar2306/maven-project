@@ -51,7 +51,7 @@ pipeline {
 
         steps {
             dir("/var/www/html") {
-                echo "Unstashing is started"
+                sh "pwd"
                 unstash 'maven-build'
                 echo "Unstashing is completed"
             }
