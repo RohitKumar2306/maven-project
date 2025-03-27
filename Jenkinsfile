@@ -4,32 +4,81 @@ pipeline {
     Name = "Rohit Kumar"
   }
   parameters {
-    string defaultValue: 'Rohit Kumar', description: 'First Name', name: 'FirstName'
-    choice choices: ['1', '2', '3', '4', '5'], description: 'Example learning', name: 'Choices'
+    choice env: ['dev', 'prod'], name: 'env'
   }   
 
   stages {
-    stage("Validate Application") {
-        parallel {    
-            stage ("Parallelly Validating the Build") {
+    // stage("Validate Application") {
+    //     parallel {    
+    //         stage ("Parallelly Validating the Build") {
+    //             steps {
+    //                 echo "This is build stage"
+    //                 echo "My Name is $Name ${params.LastName} ${params.FirstName}"
+    //                 sh "mvn validate"
+    //             }
+    //         }
+    //         stage("Parallelly Package the Application") {
+    //             steps {
+    //                 echo "This is packaging stage"
+    //                 sh "mvn clean package"
+    //             }
+    //             post {
+    //                 success {
+    //                     echo "BUILD IS SUCCESSFULL"
+    //                     archiveArtifacts artifacts: '**/target/*.war'
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
+    stage("Build the Application"){
+        steps {
+            sh 'mvn clean package -DskipTests = true'
+        }
+    }
+
+    stage("Testing the Application") {
+        parallel {
+            stage("Testing in DEV Environment") {
+                agent { label 'dev'}
                 steps {
-                    echo "This is build stage"
-                    echo "My Name is $Name ${params.LastName} ${params.FirstName}"
-                    sh "mvn validate"
+                    sh 'mvn test'
                 }
             }
-            stage("Parallelly Package the Application") {
+            stage("Testing in PROD Environment") {
+                agent { label 'Master'}
                 steps {
-                    echo "This is packaging stage"
-                    sh "mvn clean package"
-                }
-                post {
-                    success {
-                        echo "BUILD IS SUCCESSFULL"
-                        archiveArtifacts artifacts: '**/target/*.war'
-                    }
+                    sh 'mvn test'
                 }
             }
+        }
+        post {
+            success {
+                dir("webapp/target/")
+                {
+                    stash name: "maven-build", includes: "*.war"
+                }
+                echo "BUILD IS SUCCESSFULL"
+                archiveArtifacts artifacts: '**/target/*.war'
+            }
+        }
+    }
+
+    stage("Deploy into DEV Server") {
+        when { expression {params.env == 'dev'}
+        beforeAgent true}
+        agent {label 'dev'}
+
+        steps {
+            dir("/var/www/html") {
+                unstash "maven-build"
+            }
+            sh """
+            cd /var/www/html/
+            jar -xvf webapp.war
+            """
         }
     }
   }
