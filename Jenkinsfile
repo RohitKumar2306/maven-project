@@ -63,7 +63,6 @@ pipeline {
                     stash name: "maven-build", includes: "*.war"
                 }
                 echo "BUILD IS SUCCESSFULL"
-                archiveArtifacts artifacts: '**/target/*.war'
             }
         }
     }
