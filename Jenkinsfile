@@ -50,13 +50,12 @@ pipeline {
         agent {label 'dev'}
 
         steps {
-            dir("/home/rohit-slave/testingStashing") {
+            dir("/var/www/html") {
                 script {
                     try {
                         unstash 'maven-build'
                     } catch (Exception e) {
                         echo "Failed to unstash: ${e.getMessage()}"
-                        sh "ls -la"  // Display current directory content and permissions
                         throw e
                     }
                 }
