@@ -77,6 +77,7 @@ pipeline {
             dir("/var/www/html") {
                 unstash "maven-build"
             }
+            echo "Unstashing is completed"
             sh """
             cd /var/www/html/
             jar -xvf webapp.war
