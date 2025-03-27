@@ -31,10 +31,11 @@ pipeline {
     stage("Deploy") {
         agent { label 'dev'}
         steps {
-            dir ('/home/rohit-slave/testingStashing')
-            unstash 'myArtifact'
-            sh "pwd"
-            sh "cat artifact.txt"
+            dir ('/home/rohit-slave/testingStashing'){
+                unstash 'myArtifact'
+                sh "pwd"
+                sh "cat artifact.txt"
+            }
         }
     }
 
