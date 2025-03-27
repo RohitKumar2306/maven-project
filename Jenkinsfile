@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  
+
   environment {
     Name = "Rohit Kumar"
   }
@@ -84,10 +84,10 @@ pipeline {
         }
     }
 
-    stage("Deploy into DEV Server") {
-        when { expression {params.env == 'dev'}
+    stage("Deploy into PROD Server") {
+        when { expression {params.env == 'master'}
         beforeAgent true}
-        agent {label 'dev'}
+        agent {label 'master'}
 
         steps {
             dir("/var/www/html") {
