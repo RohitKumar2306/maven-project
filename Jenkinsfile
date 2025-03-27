@@ -51,13 +51,15 @@ pipeline {
 
         steps {
             dir("/var/www/html") {
-                try {
-                    unstash 'maven-build'
-                } catch (Exception e) {
-                    echo "Failed to unstash: ${e.getMessage()}"
-                    sh "ls -la"  // Display current directory content and permissions
-                    throw e
-                }   
+                script {
+                    try {
+                        unstash 'maven-build'
+                    } catch (Exception e) {
+                        echo "Failed to unstash: ${e.getMessage()}"
+                        sh "ls -la"  // Display current directory content and permissions
+                        throw e
+                    }
+                }
             }
             sh """
             cd /var/www/html/
