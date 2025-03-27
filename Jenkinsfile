@@ -50,7 +50,7 @@ pipeline {
         agent {label 'dev'}
 
         steps {
-            dir("/var/www/html") {
+            dir("/var/www/html/") {
                 script {
                     try {
                         unstash 'maven-build'
