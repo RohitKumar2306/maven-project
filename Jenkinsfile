@@ -14,6 +14,7 @@ pipeline {
                 def version = new Date().format("yyyyMMdd-HHmm")
                 echo "Version: ${version}"
                 sh 'mvn clean package -DskipTests=true'
+                sh "pwd"
                 dir("webapp/target/"){
                     sh "pwd"
                     stash includes: "*.war", name: 'maven-build'
