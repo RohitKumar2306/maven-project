@@ -10,6 +10,8 @@ pipeline {
 
     stage("Build the Application"){
         steps {
+            def version = new Date().format("yyyyMMdd-HHmm")
+            echo "Version: ${version}"
             sh 'mvn clean package -DskipTests=true'
             dir("webapp/target/"){
                 sh "pwd"
