@@ -34,9 +34,6 @@ pipeline {
     }
 
     stage("Deploy into DEV Server") {
-        when { expression {params.env == 'dev'}
-        beforeAgent true}
-        agent {label 'dev'}
 
         steps {
             dir("/var/www/html") {
