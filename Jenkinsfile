@@ -26,7 +26,6 @@ pipeline {
     stage("Testing the Application") {
         parallel {
             stage("Testing in DEV Environment") {
-                agent { label 'dev'}
                 steps {
                     sh 'mvn test'
                 }
