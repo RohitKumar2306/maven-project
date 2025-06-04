@@ -5,10 +5,6 @@ pipeline {
     Name = "Rohit Kumar"
   }
 
-  parameters {
-    choice choices: ['dev', 'Master'], name: 'env'
-  }
-
   stages {
 
 
@@ -35,12 +31,6 @@ pipeline {
                     sh 'mvn test'
                 }
             }
-            stage("Testing in PROD Environment") {
-                agent { label 'Master'}
-                steps {
-                    sh 'mvn test'
-                }
-            }
         }
     }
 
@@ -59,22 +49,6 @@ pipeline {
                         throw e
                     }
                 }
-            }
-            sh """
-            cd /var/www/html/
-            jar -xvf webapp.war
-            """
-        }
-    }
-
-    stage("Deploy into PROD Server") {
-        when { expression {params.env == 'Master'}
-        beforeAgent true}
-        agent {label 'Master'}
-
-        steps {
-            dir("/var/www/html") {
-                unstash 'maven-build'
             }
             sh """
             cd /var/www/html/
